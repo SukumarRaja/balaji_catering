@@ -48,12 +48,9 @@ class _loginAndSignupPageState extends State<loginAndSignupPage> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(15),
-                child: FittedBox(
-                  child: Image.asset(
-                    'assets/images/logo.png',
-                    height: 150,
-                  ),
-                  fit: BoxFit.cover,
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  height: 150,
                 ),
               ),
               Padding(

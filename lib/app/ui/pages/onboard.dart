@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import '../../../pages/loginandsignup.dart';
+import '../themes/colors.dart';
+import '../widgets/onboard/curve_image.dart';
+import 'auth/loginAndSignup.dart';
 
 class Onboarding extends StatefulWidget {
   Onboarding({Key? key}) : super(key: key);
@@ -9,44 +11,24 @@ class Onboarding extends StatefulWidget {
   State<Onboarding> createState() => _OnboardingState();
 }
 
-class CurveImage extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    var path = Path();
-    path.lineTo(0.0, size.height - 30);
-    path.quadraticBezierTo(
-        size.width / 4, size.height, size.width / 2, size.height);
-    path.quadraticBezierTo(size.width - (size.width / 4), size.height,
-        size.width, size.height - 30);
-    path.lineTo(size.width, 0.0);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
-}
-
 class _OnboardingState extends State<Onboarding> {
-  final CarouselController _controller = CarouselController();
-  int _currentIndex = 0;
+  final CarouselController controller = CarouselController();
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.white,
-        body: _buildBody(),
+        backgroundColor: AppColors.white,
+        body: buildBody(),
       ),
     );
   }
 
-  Widget _buildBody() {
+  buildBody() {
     return CarouselSlider(
       options: CarouselOptions(
         onPageChanged: (index, reason) {
           setState(() {
-            _currentIndex = index;
             print(index);
           });
         },
@@ -59,7 +41,7 @@ class _OnboardingState extends State<Onboarding> {
         enlargeCenterPage: true,
         scrollDirection: Axis.horizontal,
       ),
-      carouselController: _controller,
+      carouselController: controller,
       items: [1, 2, 3].map((i) {
         return Builder(
           builder: (BuildContext context) {
@@ -71,11 +53,33 @@ class _OnboardingState extends State<Onboarding> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   if (i == 1)
-                    _buildSlide1(context)
+                    buildSlide(context,
+                        index: 1,
+                        image: "second",
+                        title: "Get A Variety Of Choice To Choose !",
+                        content:
+                            "Lorem Ipsum is simply dummy text of the printing \n and typesetting industry.",
+                        buttonText: "Next",
+                        skipText: "Skip")
                   else if (i == 2)
-                    _buildSlide2(context)
+                    buildSlide(context,
+                        index: 2,
+                        image: "second",
+                        title: "Receive High Quality Food Close To You !",
+                        content:
+                            "Lorem Ipsum is simply dummy text of the printing \n and typesetting industry.",
+                        buttonText: "Next",
+                        skipText: "Skip")
                   else if (i == 3)
-                    _buildSlide3(context)
+                    buildSlide(
+                      context,
+                      index: 3,
+                      image: "second",
+                      title: "Get A Variety Of Choice To Choose !",
+                      content:
+                          "Lorem Ipsum is simply dummy text of the printing \n and typesetting industry.",
+                      buttonText: "Get Started",
+                    )
                 ],
               ),
             );
@@ -85,7 +89,15 @@ class _OnboardingState extends State<Onboarding> {
     );
   }
 
-  Widget _buildSlide1(BuildContext context) {
+  Widget buildSlide(
+    BuildContext context, {
+    required index,
+    required image,
+    required title,
+    required content,
+    required buttonText,
+    String? skipText,
+  }) {
     return Column(
       children: [
         ClipPath(
@@ -95,7 +107,7 @@ class _OnboardingState extends State<Onboarding> {
             decoration: BoxDecoration(
               image: DecorationImage(
                   image: AssetImage(
-                    'assets/images/first.jpeg',
+                    'assets/images/$image.jpg',
                   ),
                   fit: BoxFit.cover),
             ),
@@ -107,13 +119,13 @@ class _OnboardingState extends State<Onboarding> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: Text(
-                'Get A Varity Of Choice To Choose !',
+                title,
                 textAlign: TextAlign.center,
                 style: TextStyle(fontFamily: 'bold', fontSize: 20),
               ),
             ),
             Text(
-              'Lorem Ipsum is simply dummy text of the printing \n and typesetting industry.',
+              content,
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey, fontSize: 10),
             ),
@@ -126,7 +138,12 @@ class _OnboardingState extends State<Onboarding> {
           padding: const EdgeInsets.symmetric(horizontal: 30),
           child: InkWell(
             onTap: () {
-              _controller.nextPage();
+              if (index == 3) {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => LoginAndSignup()));
+              } else {
+                controller.nextPage();
+              }
             },
             child: Container(
               height: 50,
@@ -139,13 +156,14 @@ class _OnboardingState extends State<Onboarding> {
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
                     colors: [
-                      Color(0xFFF15E38),
-                      Color(0xFFFE9D16),
+                      AppColors.first,
+                      AppColors.second,
+                      AppColors.third,
                     ],
                   )),
               child: Center(
                 child: Text(
-                  'Next',
+                  buttonText,
                   style: TextStyle(fontFamily: 'bold', color: Colors.white),
                 ),
               ),
@@ -155,195 +173,30 @@ class _OnboardingState extends State<Onboarding> {
         SizedBox(
           height: 10,
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: InkWell(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => loginAndSignupPage()));
-            },
-            child: Container(
-              height: 50,
-              width: double.infinity,
-              child: Center(
-                child: Text(
-                  'Skip',
-                  style: TextStyle(fontFamily: 'bold', color: Colors.grey),
+        index == 3
+            ? SizedBox()
+            : Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LoginAndSignup()));
+                  },
+                  child: Container(
+                    height: 50,
+                    width: double.infinity,
+                    child: Center(
+                      child: Text(
+                        skipText!,
+                        style:
+                            TextStyle(fontFamily: 'bold', color: Colors.grey),
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSlide2(BuildContext context) {
-    return Column(
-      children: [
-        ClipPath(
-          clipper: CurveImage(),
-          child: Container(
-            height: 350,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage(
-                    'assets/images/second.jpg',
-                  ),
-                  fit: BoxFit.cover),
-            ),
-          ),
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Text(
-                'Receive High Quality Food Close To You !',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontFamily: 'bold', fontSize: 20),
-              ),
-            ),
-            Text(
-              'Lorem Ipsum is simply dummy text of the printing  and typesetting industry.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey, fontSize: 10),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: InkWell(
-            onTap: () {
-              _controller.nextPage();
-            },
-            child: Container(
-              height: 50,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(50.0),
-                  ),
-                  gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [
-                      Color(0xFFF15E38),
-                      Color(0xFFFE9D16),
-                    ],
-                  )),
-              child: Center(
-                child: Text(
-                  'Next',
-                  style: TextStyle(fontFamily: 'bold', color: Colors.white),
-                ),
-              ),
-            ),
-          ),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: InkWell(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => loginAndSignupPage()));
-            },
-            child: Container(
-              height: 50,
-              width: double.infinity,
-              child: Center(
-                child: Text(
-                  'Skip',
-                  style: TextStyle(fontFamily: 'bold', color: Colors.grey),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSlide3(BuildContext context) {
-    return Column(
-      children: [
-        ClipPath(
-          clipper: CurveImage(),
-          child: Container(
-            height: 350,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage(
-                    'assets/images/third.jpg',
-                  ),
-                  fit: BoxFit.cover),
-            ),
-          ),
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              child: Text(
-                'Get A Varity Of Choice To Choose !',
-                style: TextStyle(fontFamily: 'bold', fontSize: 20),
-              ),
-            ),
-            Text(
-              'Lorem Ipsum is simply dummy text of the printing \n and typesetting industry.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey, fontSize: 10),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 30,
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: InkWell(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => loginAndSignupPage()));
-            },
-            child: Container(
-              height: 50,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(50.0),
-                  ),
-                  gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [
-                      Color(0xFFF15E38),
-                      Color(0xFFFE9D16),
-                    ],
-                  )),
-              child: Center(
-                child: Text(
-                  'Get Started!',
-                  style: TextStyle(fontFamily: 'bold', color: Colors.white),
-                ),
-              ),
-            ),
-          ),
-        ),
       ],
     );
   }

@@ -23,6 +23,7 @@ import 'package:balaji_catering/pages/signUp.dart';
 import 'package:balaji_catering/pages/slider.dart';
 import 'package:balaji_catering/helper/style.dart';
 import 'package:balaji_catering/pages/tabs.dart';
+import 'package:get/get.dart';
 
 import 'app/ui/pages/onboard.dart';
 
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'FoodDoor',
       theme: ThemeData(
         brightness: Brightness.light,
